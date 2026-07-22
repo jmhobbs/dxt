@@ -45,6 +45,12 @@ func c3(c0, c1 uint32) uint32 {
 	return (c0 + 2*c1) / 3
 }
 
+// c2_opaque creates the color2 value DXT3/DXT5 always use for their color
+// block, regardless of the relative values of color0 and color1
+func c2_opaque(c0, c1 uint32) uint32 {
+	return (2*c0 + c1) / 3
+}
+
 // DecodeDXT1 decodes a DXT1 encoded byte slice to a RGBA byte slice
 func DecodeDXT1(input []byte, width, height uint) (output []byte, err error) {
 	offset := uint(0)
@@ -70,10 +76,17 @@ func DecodeDXT1(input []byte, width, height uint) (output []byte, err error) {
 			r0, g0, b0 := unpack_565(c0)
 			r1, g1, b1 := unpack_565(c1)
 
+			// color0 <= color1 signals DXT1's 3-color + transparent-black
+			// mode (S3TC spec, EXT_texture_compression_s3tc.txt,
+			// COMPRESSED_RGBA_S3TC_DXT1_EXT)
 			colors[0] = pack_rgba(r0, g0, b0, 255)
 			colors[1] = pack_rgba(r1, g1, b1, 255)
 			colors[2] = pack_rgba(c2(r0, r1, c0, c1), c2(g0, g1, c0, c1), c2(b0, b1, c0, c1), 255)
-			colors[3] = pack_rgba(c3(r0, r1), c3(g0, g1), c3(b0, b1), 255)
+			if c0 > c1 {
+				colors[3] = pack_rgba(c3(r0, r1), c3(g0, g1), c3(b0, b1), 255)
+			} else {
+				colors[3] = pack_rgba(0, 0, 0, 0)
+			}
 
 			bitcode := uint32(input[offset+4]) | uint32(input[offset+5])<<8 | uint32(input[offset+6])<<16 | uint32(input[offset+7])<<24
 			for i := 0; i < 16; i++ {
@@ -147,9 +160,12 @@ func DecodeDXT3(input []byte, width, height uint) (output []byte, err error) {
 			r0, g0, b0 := unpack_565(c0)
 			r1, g1, b1 := unpack_565(c1)
 
+			// DXT3's color block always uses the opaque encoding, regardless
+			// of the relative values of color0 and color1 (S3TC spec, EXT_
+			// texture_compression_s3tc.txt, COMPRESSED_RGBA_S3TC_DXT3_EXT)
 			colors[0] = pack_rgba(r0, g0, b0, 0)
 			colors[1] = pack_rgba(r1, g1, b1, 0)
-			colors[2] = pack_rgba(c2(r0, r1, c0, c1), c2(g0, g1, c0, c1), c2(b0, b1, c0, c1), 0)
+			colors[2] = pack_rgba(c2_opaque(r0, r1), c2_opaque(g0, g1), c2_opaque(b0, b1), 0)
 			colors[3] = pack_rgba(c3(r0, r1), c3(g0, g1), c3(b0, b1), 0)
 
 			bitcode := uint32(input[offset+12]) | uint32(input[offset+13])<<8 | uint32(input[offset+14])<<16 | uint32(input[offset+15])<<24
@@ -238,9 +254,12 @@ func DecodeDXT5(input []byte, width, height uint) (output []byte, err error) {
 			r0, g0, b0 := unpack_565(c0)
 			r1, g1, b1 := unpack_565(c1)
 
+			// DXT5's color block always uses the opaque encoding, regardless
+			// of the relative values of color0 and color1 (S3TC spec, EXT_
+			// texture_compression_s3tc.txt, COMPRESSED_RGBA_S3TC_DXT5_EXT)
 			colors[0] = pack_rgba(r0, g0, b0, 0)
 			colors[1] = pack_rgba(r1, g1, b1, 0)
-			colors[2] = pack_rgba(c2(r0, r1, c0, c1), c2(g0, g1, c0, c1), c2(b0, b1, c0, c1), 0)
+			colors[2] = pack_rgba(c2_opaque(r0, r1), c2_opaque(g0, g1), c2_opaque(b0, b1), 0)
 			colors[3] = pack_rgba(c3(r0, r1), c3(g0, g1), c3(b0, b1), 0)
 
 			bitcode_a := uint64(input[offset]) | uint64(input[offset+1])<<8 | uint64(input[offset+2])<<16 | uint64(input[offset+3])<<24 | uint64(input[offset+4])<<32 | uint64(input[offset+5])<<40 | uint64(input[offset+6])<<48 | uint64(input[offset+7])<<56
