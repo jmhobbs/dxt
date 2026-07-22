@@ -262,7 +262,10 @@ func DecodeDXT5(input []byte, width, height uint) (output []byte, err error) {
 			colors[2] = pack_rgba(c2_opaque(r0, r1), c2_opaque(g0, g1), c2_opaque(b0, b1), 0)
 			colors[3] = pack_rgba(c3(r0, r1), c3(g0, g1), c3(b0, b1), 0)
 
-			bitcode_a := uint64(input[offset]) | uint64(input[offset+1])<<8 | uint64(input[offset+2])<<16 | uint64(input[offset+3])<<24 | uint64(input[offset+4])<<32 | uint64(input[offset+5])<<40 | uint64(input[offset+6])<<48 | uint64(input[offset+7])<<56
+			// alpha0, alpha1 occupy offset+0/offset+1; the 48-bit index
+			// field is the 6 bytes at offset+2..offset+7 (S3TC spec, EXT_
+			// texture_compression_s3tc.txt, COMPRESSED_RGBA_S3TC_DXT5_EXT)
+			bitcode_a := uint64(input[offset+2]) | uint64(input[offset+3])<<8 | uint64(input[offset+4])<<16 | uint64(input[offset+5])<<24 | uint64(input[offset+6])<<32 | uint64(input[offset+7])<<40
 			bitcode_c := uint32(input[offset+12]) | uint32(input[offset+13])<<8 | uint32(input[offset+14])<<16 | uint32(input[offset+15])<<24
 
 			for i := 0; i < 16; i++ {
