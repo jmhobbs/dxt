@@ -81,3 +81,68 @@ if err != nil {
 
 // dxtBytes should hold the compressed data if no error happened
 ```
+
+# CLI
+
+```bash
+$ dxtool -h
+Usage: dxtool [encode|decode]
+
+Commands:
+        encode   Encode to DXT1/3/5
+        decode   Decode from DXT1/3/5
+
+This tool does not support reading/writing DDS files, only raw DXT1/3/5 data.
+```
+
+## encode - image to DXT
+
+```bash
+$ dxtool encode -h
+Usage: dxtool encode [options] <input image file> <output DXT file>
+
+Options:
+  -dxt1
+        output DXT1 format
+  -dxt3
+        output DXT3 format
+  -dxt5
+        output DXT5 format
+
+If no format flags are specified, the program will attempt to auto-detect the format based on the filename.
+```
+
+```bash
+$ dxtool encode test-pattern.png text-pattern.dxt3
+```
+
+## decode - DXT to image
+
+```
+$ dxtool decode -h
+Usage: dxtool decode [options] <-width> <-height> <input DXT file> <output image file>
+
+Options:
+  -dxt1
+        input DXT1 format
+  -dxt3
+        input DXT3 format
+  -dxt5
+        input DXT5 format
+  -gif
+        output GIF format
+  -height uint
+        height of the input image (required)
+  -jpg
+        output JPEG format
+  -png
+        output PNG format
+  -width uint
+        width of the input image (required)
+
+If no format flags are specified, the program will attempt to auto-detect the format based on the filename.
+```
+
+```bash
+$ dxtool decode -width 256 -height 256 test-pattern.dxt3 test-pattern.jpg
+```

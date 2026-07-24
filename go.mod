@@ -1,3 +1,4 @@
 module github.com/mauserzjeh/dxt
 
-go 1.18
+go 1.22
+
