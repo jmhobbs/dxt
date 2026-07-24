@@ -77,6 +77,8 @@ func encodeCommand(args []string) {
 		fmt.Fprintf(os.Stderr, "error writing output: %v\n", err)
 		os.Exit(2)
 	}
+
+	fmt.Printf("Encoded %s to %s as %s (%dx%d)\n", encodeFs.Arg(0), encodeFs.Arg(1), format, img.Bounds().Dx(), img.Bounds().Dy())
 }
 
 func imgToRGBABytes(img image.Image) []byte {

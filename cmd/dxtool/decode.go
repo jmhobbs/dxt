@@ -104,4 +104,6 @@ func decodeCommand(args []string) {
 		fmt.Fprintf(os.Stderr, "error encoding output image: %v\n", err)
 		os.Exit(3)
 	}
+
+	fmt.Printf("Decoded %s as %s to %s as %s (%dx%d)\n", decodeFs.Arg(0), inputFormat, decodeFs.Arg(1), outputFormat, *width, *height)
 }

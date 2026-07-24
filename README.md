@@ -113,7 +113,8 @@ If no format flags are specified, the program will attempt to auto-detect the fo
 ```
 
 ```bash
-$ dxtool encode test-pattern.png text-pattern.dxt3
+$ dxtool encode test-pattern.png test-pattern.dxt3
+Encoded test-pattern.png to test-pattern.dxt3 as dxt3 (512x512)
 ```
 
 ## decode - DXT to image
@@ -145,4 +146,5 @@ If no format flags are specified, the program will attempt to auto-detect the fo
 
 ```bash
 $ dxtool decode -width 256 -height 256 test-pattern.dxt3 test-pattern.jpg
+Decoded test-pattern.dxt3 as dxt3 to test-pattern.jpg as jpg (512x512)
 ```
