@@ -82,7 +82,7 @@ func encodeCommand(args []string) {
 }
 
 func imgToRGBABytes(img image.Image) []byte {
-	rgb, ok := img.(*image.RGBA)
+	rgb, ok := img.(*image.NRGBA)
 	if ok {
 		return rgb.Pix
 	}

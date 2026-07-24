@@ -73,7 +73,7 @@ func decodeCommand(args []string) {
 		os.Exit(3)
 	}
 
-	img := image.NewRGBA(image.Rect(0, 0, int(*width), int(*height)))
+	img := image.NewNRGBA(image.Rect(0, 0, int(*width), int(*height)))
 	img.Pix = rgba
 
 	sink, err := os.Create(decodeFs.Arg(1))
